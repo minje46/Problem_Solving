@@ -1,7 +1,5 @@
 #include<iostream>
-#include<algorithm>
 #include<memory.h>
-#include<vector>
 #include<cstdlib>
 #pragma warning(disable:4996)
 
@@ -11,8 +9,9 @@ using namespace std;
 
 int R, C;				// R = The height of map.		C = The width of map.
 char map[MAX][MAX];		// map = The memory of original map.
-pair<int, int> idx = { 1,1 };		// idx = The location of current index.
-int cnt = 0;
+int visit[MAX][MAX];			// visit = The memory of visited value to figure out loop or not.
+int cnt[MAX][MAX];			// cnt = The memory of repitition.
+pair<int, int> idx = { 1,1 };	// idx = The location of current index.
 
 void Move(char dir)
 {
@@ -27,25 +26,13 @@ void Move(char dir)
 	
 	// Overflow.
 	if (idx.first < 1)
-	{
 		idx.first = R;
-		cnt++;
-	}
 	if (idx.first > R)
-	{
 		idx.first = 1;
-		cnt++;
-	}
 	if (idx.second < 1)
-	{
 		idx.second = C;
-		cnt++;
-	}
 	if (idx.second > C)
-	{
 		idx.second = 1;
-		cnt++;
-	}
 }
 
 bool Check()
@@ -56,21 +43,30 @@ bool Check()
 
 	while (map[idx.first][idx.second] != '@')
 	{
-		if (cnt > MAX*MAX)
-			return false;
-
 		int y = idx.first;
 		int x = idx.second;
+
+		if (cnt[y][x] >= MAX)
+			return false;
+
+		if (visit[y][x] == -1)
+			visit[y][x] = memory;
 
 		if (48 <= map[y][x] && map[y][x] <= 57)
 		{
 			memory = map[y][x] - '0';
+			if (visit[y][x] == memory)
+				cnt[y][x] += 1;
+			visit[y][x] = memory;
 			Move(dir);
 		}
 
 		else if (map[y][x] == '>' || map[y][x] == '<' || map[y][x] == '^' || map[y][x] == 'v')
 		{
 			dir = map[y][x];
+			if (visit[y][x] == memory)
+				cnt[y][x] += 1;
+			visit[y][x] = memory;
 			Move(dir);
 		}
 
@@ -80,6 +76,10 @@ bool Check()
 				dir = '>';
 			else
 				dir = '<';
+			
+			if (visit[y][x] == memory)
+				cnt[y][x] += 1;
+			visit[y][x] = memory;
 			Move(dir);
 		}
 
@@ -89,12 +89,21 @@ bool Check()
 				dir = 'v';
 			else
 				dir = '^';
+		
+			if (visit[y][x] == memory)
+				cnt[y][x] += 1;
+			visit[y][x] = memory;
 			Move(dir);
 		}
 
 		else if (map[y][x] == '.')
+		{
+			if (visit[y][x] == memory)
+				cnt[y][x] += 1;
+			visit[y][x] = memory;
 			Move(dir);
-		
+		}
+
 		else if (map[y][x] == '+')
 		{
 			memory += 1;
@@ -107,6 +116,9 @@ bool Check()
 
 				rep = { y, x };
 			}
+			if (visit[y][x] == memory)
+				cnt[y][x] += 1;
+			visit[y][x] = memory;
 			Move(dir);
 		}
 		
@@ -120,28 +132,38 @@ bool Check()
 					return false;
 
 				rep = { y, x };
-
 			}
+			if (visit[y][x] == memory)
+				cnt[y][x] += 1;
+			visit[y][x] = memory;
 			Move(dir);
 		}
 
 		else if (map[y][x] == '?')
 		{
-			int r = rand() % 4;
+			map[y][x] = '>';
+			if (Check())
+				return true;
 
-			if (r == 0)
-				dir = '<';
-			else if (r == 1)
-				dir = '>';
-			else if (r == 2)
-				dir = '^';
-			else if (r == 3)
-				dir = 'v';
+			map[y][x] = '<';
+			if (Check())
+				return true;
 
-			Move(dir);
+			map[y][x] = '^';
+			if (Check())
+				return true;
+
+			map[y][x] = 'v';
+			if (Check())
+				return true;
+
+			return false;
+			//if (visit[y][x] == memory)
+			//	cnt[y][x] += 1;
+			//visit[y][x] = memory;
+			//Move(dir);
 		}
 	}
-
 	return true;
 }
 
@@ -157,8 +179,9 @@ int main(void)
 	for (int t = 1; t <= test_case; t++)
 	{
 		memset(map, ' ', sizeof(map));
+		memset(visit, -1, sizeof(visit));
+		memset(cnt, 0, sizeof(cnt));
 		idx = { 1,1 };
-		cnt = 0;
 		cin >> R >> C;
 		cin.ignore();					// [입력버퍼('\n') 지우기.]
 		for (int i = 1; i <= R; i++)
