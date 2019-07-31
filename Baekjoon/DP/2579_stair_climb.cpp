@@ -2,7 +2,7 @@
 #include<algorithm>
 #include<memory.h>
 
-#define MAX 301
+#define MAX 301			// The maximum condition.
 
 using namespace std;
 
