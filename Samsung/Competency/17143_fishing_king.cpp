@@ -7,6 +7,9 @@
 
 using namespace std;
 
+const int dy[5] = { 0,-1,1,0,0 };		// [1:UP]	[2:DOWN]
+const int dx[5] = { 0,0,0,1,-1 };		// [3:RIGHT]	[4:LEFT]
+
 struct Shark		// The memory for shark's data.
 {
 	int y, x;			// Location.
@@ -63,70 +66,49 @@ void Move()		// To move the whole of sharks based on their own speed and directi
 	for (int i = 0; i < shark.size(); i++)
 	{
 		map[shark[i].y][shark[i].x] -= 1;		// It means current shark will move.
+		
+		int y = shark[i].y, x = shark[i].x;		// The current shark's location.
+		int dir = shark[i].dir;						// The current shark's direction to move.
+		int range;										// [Shark가 다시 제자리로 돌아오는 값.]
+		if (dir <= 2)										// [range를 이용하여 shark의 움직이는 loop 값을 줄여줌.]
+			range = shark[i].speed % (2 * (R - 1));			// [Up,Down의 경우, 1~row의 값이 overflow range.]
+		else																// [Right, Left의 경우, 1~column의 값이 overflow range.]
+			range = shark[i].speed % (2 * (C - 1));
 
-		int dy, dx, dir = shark[i].dir;
-		switch (dir)		// Set the direction coordinate based on direction.
+		for (int s = 0; s < range; s++)
 		{
-		case 1:			// Up.
-			dy = -1;
-			dx = 0;
-			break;
-		case 2:			// Down.
-			dy = 1;
-			dx = 0;
-			break;
-		case 3:			// Right.
-			dy = 0;	
-			dx = 1;
-			break;
-		case 4:			// Left.
-			dy = 0;
-			dx = -1;
-			break;
-		default:
-			break;
-		}
+			y += dy[dir];
+			x += dx[dir];
 
-		int y = shark[i].y;		// The current shark's location.
-		int x = shark[i].x;
-		for (int s = shark[i].speed; s > 0; s--)
-		{
-			y += dy;			// Move one by one.
-			x += dx;
-								// Overflow. [Change the direction as opposite way.]
-			if (y < 1)		// Up. [Change the way as Down.]	
-			{
-				y = 2;			
-				dy *= -1;	// Up -> Down.
-				dir = 2;		// Down.
-			}
-			
-			else if (y > R)		// Down. [Change the way as Up.]
-			{
-				y = R - 1;
-				dy *= -1;	// Down -> Up.
-				dir = 1;		// Up.
-			}
-			
-			else if (x < 1)		// Left. [Change the way as Right.]
-			{
-				x = 2;
-				dx *= -1;	// Left -> Right.
-				dir = 3;		// Right.
-			}
-
-			else if (x > C)		// Right. [Change the way as Left.]
-			{
-				x = C - 1;
-				dx *= -1;	// Right -> Left.
-				dir = 4;		// Left.
+			if (y < 1 || y > R || x < 1 || x > C)		// Overflow.
+			{														// Change the direction as opposite way.		
+				switch (dir)		// Set the direction coordinate based on direction.
+				{
+				case 1:			// Up.
+					dir = 2;
+					break;
+				case 2:			// Down.
+					dir = 1;
+					break;
+				case 3:			// Right.
+					dir = 4;
+					break;
+				case 4:			// Left.
+					dir = 3;
+					break;
+				default:
+					break;
+				}
+				s -= 1;			
+				y += dy[dir];	// Return to previous location because of overflow.
+				x += dx[dir];
+				continue;
 			}
 		}
-
 		map[y][x] += 1;		// Increase the number of sharks on this location.
 		shark[i].y = y;			// Update the new shark's data.
 		shark[i].x = x;
-		shark[i].dir = dir;
+		shark[i].dir = dir;	
 	}
 }
 
