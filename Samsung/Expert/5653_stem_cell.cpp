@@ -3,7 +3,7 @@
 #include<memory.h>
 //#pragma warning(disable:4996)
 
-#define MAX 351
+#define MAX 352
 
 using namespace std;
 
