@@ -6,8 +6,8 @@
 
 using namespace std;
 
-const int dy[4] = { 1,0,-1,0 };		// Up, Left.
-const int dx[4] = { 0,1,0,-1 };		// Down, Right.
+const int dy[4] = { -1,1,0,0 };		// Up, Down
+const int dx[4] = { 0,0,-1,1 };		// Left, Right.
 
 struct Beads		// The data of beads.
 {
@@ -78,16 +78,16 @@ void BFS()
 				switch (i)
 				{
 				case 0:
-					cur.ry < cur.by ? ry-- : by--;
-					break;
-				case 1:
-					cur.rx < cur.bx ? rx-- : bx--;
-					break;
-				case 2:
 					cur.ry < cur.by ? by++ : ry++;
 					break;
-				case 3:
+				case 1:
+					cur.ry < cur.by ? ry-- : by--;
+					break;
+				case 2:
 					cur.rx < cur.bx ? bx++ : rx++;
+					break;
+				case 3:
+					cur.rx < cur.bx ? rx-- : bx--;
 					break;
 				default:
 					break;
@@ -116,7 +116,7 @@ int main(void)
 		{
 			char ch;
 			cin >> ch;
-			
+
 			switch (ch)
 			{
 			case '#':	// Wall.
