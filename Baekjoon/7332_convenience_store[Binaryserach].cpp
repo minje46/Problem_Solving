@@ -9,7 +9,7 @@
 using namespace std;
 
 int N, answer;
-int time[DAY];
+//int time[DAY];
 vector<int> vc;
 bool visit[1000];
 
@@ -30,24 +30,24 @@ void DFS(int arr[], int cnt)
 		answer = min(answer, cnt);
 		return;
 	}
-	
+
 	for (int i = 0; i < vc.size(); i++)
 	{
 		if (!visit[i])
 		{
 			visit[i] = true;
-			
+
 			int tmp[DAY];
 			memcpy(tmp, arr, sizeof(tmp));
 			int idx = vc[i];
-			for (int j = 0; j < 8; j++)
+			for (int j = 0; j < 4; j++)
 			{
 				if (idx == 24)
 					idx = 0;
 				arr[idx++] -= 1;
 			}
 
-			DFS(arr, cnt+1);
+			DFS(arr, cnt + 1);
 			visit[i] = false;
 			memcpy(arr, tmp, sizeof(tmp));
 		}
@@ -64,6 +64,7 @@ int main(void)
 	cin >> test_case;
 	while (test_case--)
 	{
+		int time[DAY];
 		memset(time, 0, sizeof(time));
 		memset(visit, false, sizeof(visit));
 		vc.clear();
@@ -79,7 +80,7 @@ int main(void)
 			cin >> val;
 			vc.push_back(val);
 		}
-
+		sort(vc.begin(), vc.end());
 		DFS(time, 0);
 
 		if (answer == INF)
