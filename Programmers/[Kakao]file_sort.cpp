@@ -5,67 +5,64 @@
 
 using namespace std;
 
-bool Pred(vector<string> a, vector<string> b)
+bool comp(const vector<string> &a, const vector<string> &b)		// Customized sort.
 {
-	string a1, b1;
+	string p1, p2;
 	for (int i = 0; i<a[0].size(); i++)
-		a1 += toupper(a[0][i]);
+		p1 += toupper(a[0][i]);			// Case insensitive.	[Head]
+	for (int i = 0; i < b[0].size(); i++)
+		p2 += toupper(b[0][i]);			// Make as upper case to compare.
 
-	for (int i = 0; i<b[0].size(); i++)
-		b1 += toupper(b[0][i]);
+	if (p1.compare(p2) == 0)				// Numerical.	[Middle]
+		return stoi(a[1]) < stoi(b[1]);	
 
-	if (a1.compare(b1) == 0)
-		return stoi(a[1])<stoi(b[1]);
-
-	if (a1.compare(b1)>0)
-		return false;
-	else
+	if (p1.compare(p2)<0)					// Stable sort.
 		return true;
+	else
+		return false;
 }
 
-vector<string> solution(vector<string> files) {
-	vector<string> answer;
-	vector<vector<string>> data(files.size(), vector<string>(3));
-
-	int temp = 0;
-	int j = 0;
-	for (int i = 0; i < files.size(); i++)
+vector<string> solution(vector<string> files)		// To figure out the file's order.
+{
+	vector<string> answer;			
+	vector<vector<string>> data(files.size(), vector<string>(3));		// [Head], [Middle], [Tail]
+	for (int i = 0; i<files.size(); i++)		// For each file names.
 	{
-		j = 0;
-		temp = 0;
-		while (j < files[i].size())
+		int y = 0, x = 0;			// y = The index of file.		x = The index of current file's string.
+		while (x<files[i].size())		// [Head.]
 		{
-			if ((files[i][j] < '0' || files[i][j] > '9'))
-				data[i][temp] += files[i][j];
+			if (files[i][x]<'0' || files[i][x] >'9')		// Only characters.
+				data[i][y] += files[i][x];
 			else
 			{
-				temp++;
+				y += 1;
 				break;
 			}
-			j++;
+			x += 1;
 		}
-		while (j < files[i].size())
-		{
-			if (files[i][j] >= '0'&&files[i][j] <= '9')
-				data[i][temp] += files[i][j];
-			else
-			{
-				temp++;
-				break;
-			}
-			j++;
-		}
-		while (j < files[i].size())
-		{
-			data[i][temp] += files[i][j];
-			j++;
-		}
-	}
-	stable_sort(data.begin(), data.end(), Pred);
 
-	for (int i = 0; i < files.size(); i++) {
-		answer.push_back(data[i][0] + data[i][1] + data[i][2]);
+		while (x<files[i].size())			// [Middle.]
+		{
+			if (files[i][x] >= '0' && files[i][x] <= '9')		// Only numbers.
+				data[i][y] += files[i][x];
+			else
+			{
+				y += 1;
+				break;
+			}
+			x += 1;
+		}
+
+		while (x<files[i].size())			// [Tail.]
+		{
+			data[i][y] += files[i][x];		// remainders.
+			x += 1;
+		}
 	}
+
+	stable_sort(data.begin(), data.end(), comp);
+	for (int i = 0; i<files.size(); i++)
+		answer.push_back(data[i][0] + data[i][1] + data[i][2]);
 	return answer;
 }
 
