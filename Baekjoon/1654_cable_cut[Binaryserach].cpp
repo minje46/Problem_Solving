@@ -23,17 +23,17 @@ bool check(long long length)			// To figure out whether it is possible to make N
 
 void Simulation()		// To search the longest length.
 {
-	long long low = 1;
-	long long high = cable[K - 1];
-	while (low <= high)
+	long long low = 1;		// From 1
+	long long high = cable[K - 1];		// To longest length.
+	while (low <= high)		// Base case. [left couldn't go over the middle or right one.]
 	{
 		long long mid = (low + high) / 2;
-		if (check(mid))
+		if (check(mid))		// Check wheter it is possible to make N'th cables.
 		{
 			answer = max(answer, mid);
 			low = mid + 1;
 		}
-		else
+		else				
 			high = mid - 1;
 	}
 }
