@@ -1,55 +1,55 @@
 #include<iostream>
-#include<algorithm>
-#include<memory.h>
+#include<queue>
 
-#define MAX 51
-#define INF 987654321
+#define MAX 301
 
 using namespace std;
 
-int N, M;					// N = The height of map.			M = The width of map.
-char map[MAX][MAX], tmp[MAX][MAX];		// map = The memory of original input.
-int answer = INF;		// answer = The minimum number of repaint as output.
+const int dy[3] = { 1,1,0 };
+const int dx[3] = { 0, 1,1 };
 
-void Copied(int y, int x)		// To copy the original map data to temporary memory.
+int N, M, R;		// N = The height of map.			M = The width of map.				R = The number of rotation.
+int map[MAX][MAX];		// map = The memory of original input data.
+
+void Rotation()		// To rotate the whole of 2 dimension array in counter clock wise.
 {
-	for (int i = 0; i < 8; i++)
+	int k = min(N, M) / 2;		// k = The number of rotate on the array.
+	int s_y = 0, e_y = N - 1, s_x = 0, e_x = M - 1;			// The index of start and end coordinate.
+	for (int s = 0; s < k; s++)
 	{
-		for (int j = 0; j < 8; j++)
-			tmp[i][j] = map[y + i][x + j];
-	}
-}
-
-void Simulation(char a, char b)			// To figure out the chess board's figure.
-{
-	int cnt = 0;		// Count the number of painted.
-	char color[2] = { a,b };		// The basic colors set.
-
-	for (int i = 0; i < 8; i++)
-	{
-		if (i != 0)	// Each row has different color set.
-			swap(color[0], color[1]);
-		for (int j = 0; j < 8; j++)
+		pair<int, int> dpt = { s,s };	// From (0,0) to (k-1, k-1).
+		queue<int> que;
+		que.push(map[s][s]);			// Start position.
+		for (int d = 0; d < 4; d++)		// Four directions.
 		{
-			if (j % 2 == 0)		// Each column has opposite color.
-			{
-				if (tmp[i][j] != color[0])		// Every even column has same color.
-				{
-					tmp[i][j] = color[0];
-					cnt += 1;
-				}
-			}
+			int r_y = e_y - s_y;		// The range of y.
+			int r_x = e_x - s_x;		// The range of x.
+			pair<int, int> dst;			// Destination.
+			if (d == 3)					// Return to start point.
+				dst = { s,s };
 			else
+				dst = { s + (dy[d] * r_y), s + (dx[d] * r_x) };
+
+			while (dpt.first != dst.first || dpt.second != dst.second)		// Until arrived.
 			{
-				if (tmp[i][j] == color[0])		// Every odd column has same color.
-				{
-					tmp[i][j] = color[1];
-					cnt += 1;
-				}
+				if (dst.first - dpt.first > 0)		// Go down.
+					dpt.first++;
+				if (dst.first - dpt.first < 0)		// Go up.
+					dpt.first--;
+
+				if (dst.second - dpt.second > 0)		// Go right.
+					dpt.second++;
+				if (dst.second - dpt.second < 0)		// Go left.
+					dpt.second--;
+
+				que.push(map[dpt.first][dpt.second]);
+				map[dpt.first][dpt.second] = que.front();		// Shift the value.
+				que.pop();
 			}
 		}
+		s_y += 1, s_x += 1;		// [Square가 대각선 모양으로 
+		e_y -= 1, e_x -= 1;		// 내부의 위치 조정 되기 때문.]
 	}
-	answer = min(answer, cnt);			// Compare the minimum number of painted.
 }
 
 int main(void)
@@ -58,23 +58,20 @@ int main(void)
 	cin.tie(0);
 	cout.tie(0);
 
-	cin >> N >> M;
+	cin >> N >> M >> R;
 	for (int i = 0; i < N; i++)
 	{
 		for (int j = 0; j < M; j++)
-			cin >> map[i][j];				// Input.
+			cin >> map[i][j];					// Input.
 	}
 
-	for (int i = 0; i <= N - 8; i++)
+	for (int i = 0; i < R; i++)
+		Rotation();									// Rotation.
+
+	for (int i = 0; i < N; i++)
 	{
-		for (int j = 0; j <= M - 8; j++)
-		{
-			Copied(i, j);					// Temporary memory.
-			Simulation('B', 'W');		// Paint to ['B', 'W'] chess board.	
-			Copied(i, j);					// Temporary memory.
-			Simulation('W', 'B');		// Paint to ['W', 'B'] chess board.
-		}
+		for (int j = 0; j < M; j++)
+			cout << map[i][j] << " ";			// Output.
+		cout << endl;
 	}
-
-	cout << answer << endl;				// Output.
 }
