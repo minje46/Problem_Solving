@@ -1,45 +1,34 @@
 #include<iostream>
-#include<algorithm>
 #include<string>
+#include<list>
 
 using namespace std;
 
 string input = "";				// input = The memory of input data.
-string password = "";		// password = The user's password as output.
+list<char> password;		// password = The user's password as output.
 
-void Simulation()
+void Simulation()		// To figure out the password based on key logger.
 {
-	int idx = 0;
+	list<char>::iterator idx = password.begin();		// Index memory.
 	for (int i = 0; i < input.length(); i++)
 	{
-		if (input[i] == '<')
+		if (input[i] == '<')		// Move to left.
 		{
-			if (!password.empty())
-				idx -= 1;
+			if (idx != password.begin())		// Avoid underflow.
+				idx--;
 		}
-
-		else if (input[i] == '>')
+		else if (input[i] == '>')		// Move to right.
 		{
-			if (idx < password.length())
-				idx += 1;
+			if (idx != password.end())			// Avoid overflow.
+				idx++;
 		}
-
-		else if (input[i] == '-')
+		else if (input[i] == '-')		// Back space.
 		{
-			if (!password.empty())
-			{
-				idx -= 1;
-				if (idx < 0)
-					idx = 0;
-				else
-					password.erase(password.begin() + idx);
-			}
+			if (idx != password.begin())		// Avoid underflow.
+				password.erase((--idx)++);
 		}
-		else
-		{
-			password.insert(password.begin() + idx, input[i]);
-			idx += 1;
-		}
+		else								// Insert the character.
+			password.insert(idx, input[i]);
 	}
 }
 
@@ -56,10 +45,11 @@ int main(void)
 		input.clear();
 		password.clear();
 	
-		cin >> input;
-		
-		Simulation();
+		cin >> input;		// Input.
 
-		cout << password << endl;
+		Simulation();		// Key logger.
+		for (auto i : password)
+			cout << i;		// Output.
+		cout << endl;
 	}
 }
