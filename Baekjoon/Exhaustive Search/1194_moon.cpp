@@ -38,7 +38,6 @@ void BFS()		// To figure out the shortest way to escape based on bfs.
 			answer = cur.cnt;
 			return;
 		}
-
 		for (int i = 0; i < 4; i++)
 		{
 			int ny = cur.y + dy[i];
