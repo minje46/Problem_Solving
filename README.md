@@ -19,5 +19,5 @@
 > - Map data structure : `[Kakako]chat_room`
 > - Combination set based on DFS : `The spring's test i couldn't solve : 17142_lab3[Samsung]`<br> `15684_ladder_control[Samsung]`, `15686_chicken_delivery[Samsung]`
 > - String : `[Kakao]match_score`
-> - Bit operation : `[Kakako]candidate_key`
+> - Bit operation : `[Kakako]candidate_key`, `[Bit masking]1194_moon`
 
