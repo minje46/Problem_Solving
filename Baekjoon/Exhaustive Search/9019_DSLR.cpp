@@ -1,5 +1,4 @@
 #include<iostream>
-#include<algorithm>
 #include<memory.h>
 #include<queue>
 #include<string>
@@ -12,57 +11,9 @@ int A, B;							// A = The initial integer value.				B = The target integer valu
 bool visit[MAX];				// visit = The memory of visited or not.
 string answer;					// answer = The minimum combination to shot the target.
 
-pair<int, string> Calculator(int idx, pair<int, string> val)
-{
-	switch (idx)
-	{
-	case 0:									// D calculation.
-	{
-		int tmp = val.first;
-		tmp *= 2;					
-		if (tmp > 9999)
-			tmp %= 10000;
-		val = { tmp, val.second + "D" };
-		break;
-	}
-	case 1:									// S calculation.
-	{
-		int tmp = val.first;
-		tmp -= 1;
-		if (tmp < 0)
-			tmp = 9999;
-		val = { tmp, val.second + "S" };
-		break;
-	}
-	case 2:									// L calculation.
-	{
-		string tmp = to_string(val.first);
-		string nval = "";
-		for (int i = 1; i < tmp.length(); i++)
-			nval += tmp[i];
-		nval += tmp[0];
-		val = { stoi(nval,nullptr,10), val.second + "L" };
-		break;
-	}
-	case 3:									// R calculation.
-	{
-		string tmp = to_string(val.first);
-		string nval = "";
-		nval += tmp[tmp.length() - 1];
-		for (int i = 0; i < tmp.length() - 1; i++)
-			nval += tmp[i];
-		val = { stoi(nval, nullptr, 10), val.second + "R" };
-	}
-	default:
-		break;
-	}
-
-	return val;
-}
-
-void BFS()
-{
-	queue<pair<int, string>> que;
+void BFS()						// To figure out the target number based on "DSLR" calculation.
+{		
+	queue<pair<int, string>> que;		// Basic step.
 	que.push(make_pair(A, ""));
 	visit[A] = true;
 
@@ -71,20 +22,34 @@ void BFS()
 		auto cur = que.front();
 		que.pop();
 
-		if (cur.first == B)					// Base case.
+		if (cur.first == B)						// Base case.
 		{
 			answer = cur.second;
 			return;
 		}
 
+		int nval[4];			// nval = The memory of new value which will be calculated.
+		nval[0] = (cur.first * 2) % 10000;										// "D" calculation.
+		nval[1] = (cur.first - 1) < 0 ? 9999 : cur.first - 1;				// "S" calculation.
+		nval[2] = (cur.first % 1000) * 10 + (cur.first / 1000);			// "L" calculation.
+		nval[3] = (cur.first % 10) * 1000 + (cur.first / 10);				// "R" calculation.
+		
 		for (int i = 0; i < 4; i++)
 		{
-			pair<int, string> nval = Calculator(i, cur);
-			
-			if (!visit[nval.first])
+			if (!visit[nval[i]])			// Not visited yet.
 			{
-				que.push(nval);
-				visit[nval.first] = true;
+				string tmp = cur.second;
+				if (i == 0)				// Key point!
+					tmp += "D";		// When the string was copied, it takes lots of time.	
+				else if (i == 1)
+					tmp += "S";
+				else if (i == 2)
+					tmp += "L";
+				else
+					tmp += "R";
+
+				que.push(make_pair(nval[i], tmp));
+				visit[nval[i]] = true;
 			}
 		}
 	}
@@ -101,11 +66,11 @@ int main(void)
 	{	// Initialization.
 		memset(visit, false, sizeof(visit));
 		answer = "";
-
-		cin >> A >> B;
+			
+		cin >> A >> B;								// Input.
 		
-		BFS();
+		BFS();											// Exhaustive search.
 
-		cout << answer << endl;
+		cout << answer << endl;					// Output.
 	}
 }
