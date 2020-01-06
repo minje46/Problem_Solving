@@ -2,7 +2,7 @@
 #include<algorithm>
 #include<memory.h>
 #pragma warning(disable:4996)
-#define MAX 12
+#define MAX 11
 
 using namespace std;
 
@@ -11,40 +11,24 @@ int N;												// N = The size of array map.
 
 void Simulation()						// To do rotation as snail figure in array.
 {
-	int idx = 1, n = N;						// idx = The value.				n = The standard of array to rotate.
-	int i, j, dpt = 1;							// i,j = The index of array.		dpt = Start point.
+	int idx = 1, n = N;						// idx = The value.								n = The standard of array to rotate.
+	int i = 0, j = -1, dir = 1;				// i,j = The row and column of array.		dir = On going direction.
 
-	while (n >= 1)
+	while (n > 0)
 	{
-		i = dpt;		j = dpt;					// Start point.
-		
-		for (int k = 0; k < n; k++)			// Go right way.
+		for (int k = 0; k < n; k++)				// Columns.
 		{
-			if (map[i][j + k] == 0)
-				map[i][j + k] = idx++;
-		}
-		j = n;
-
-		for (int k = 1; k < n; k++)			// Go down.
-		{
-			if (map[i + k][j] == 0)
-				map[i + k][j] = idx++;
-		}
-		i = n;
-
-		for (int k = 1; k < n; k++)			// Go left way.
-		{
-			if (map[i][j - k] == 0)
-				map[i][j - k] = idx++;
-		}
-		j = dpt++;
-
-		for (int k = 1; k < n - 1; k++)	// Go up.
-		{
-			if (map[i - k][j] == 0)
-				map[i - k][j] = idx++;
+			j += dir;
+			map[i][j] = idx++;
 		}
 		n--;
+		
+		for (int k = 0; k < n; k++)				// Rows.
+		{
+			i += dir;
+			map[i][j] = idx++;
+		}
+		dir *= -1;									// Control increse and decrease with direction way.
 	}
 }
 
@@ -64,9 +48,9 @@ int main(void)
 		Simulation();
 
 		cout << "#" << t << endl;
-		for (int i = 1; i <= N; i++)
+		for (int i = 0; i < N; i++)
 		{
-			for (int j = 1; j <= N; j++)
+			for (int j = 0; j < N; j++)
 				cout << map[i][j] << " ";
 			cout << endl;
 		}
