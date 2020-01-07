@@ -19,6 +19,7 @@ bool Square()			// To figure out square format has correct form of sudoku.
 			for (int k = 0; k < 3; k++)
 			{
 				if (!visit[map[i + k][j + k]])				// 1~9 numbers not visited yet.
+					visit[map[i + k][j + k]] = true;
 				else												// Already visited.	
 					return false;
 			}
